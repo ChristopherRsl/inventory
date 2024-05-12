@@ -15,6 +15,7 @@ import {
   IonPage,
   IonRow,
   IonTitle,
+  IonToast,
   IonToolbar,
 } from "@ionic/react";
 import { useEffect, useRef, useState } from "react";
@@ -22,9 +23,13 @@ import LinkAction from "../components/LinkAction";
 import { arrowBack, shapesOutline } from "ionicons/icons";
 import '../firebase.config'
 import {getAuth, createUserWithEmailAndPassword,onAuthStateChanged} from "firebase/auth"
+import { useHistory } from 'react-router-dom';
+
+
+
 export default function Signup() {
   const auth = getAuth()
-
+  const history = useHistory();
 
 
 
@@ -42,8 +47,7 @@ export default function Signup() {
     onAuthStateChanged(auth, (user)=>{
       if(user){
         console.log(user)
-        const uid = user.uid
-        
+        // history.push("/home");
       }else{
         console.log("tidak ada user")
       }
@@ -70,7 +74,7 @@ export default function Signup() {
     createUserWithEmailAndPassword(auth, userEmail as string, userPassword as string).then((userCredential)=>{
 
       const user = userCredential.user;
-      setError("Register Berhasil");
+      history.push("/home");
     }).catch((err)=>{
       const errorMsg = err.message;
       setError(errorMsg);
@@ -163,6 +167,12 @@ export default function Signup() {
                     <IonButton expand="block" color="success" onClick={signup}>
                       Sign up
                     </IonButton>
+                    <IonToast
+                      isOpen={isOpen}
+                      message="Register Successfull"
+                      onDidDismiss={() => setIsOpen(false)}
+                      duration={5000}
+                    ></IonToast>
                   </IonCol>
                 </IonRow>
                 
