@@ -38,6 +38,7 @@ import Product from './pages/Product';
 import Document from './pages/Document';
 import Add from './pages/Add';
 import Remove from './pages/Remove';
+import NewProduct from './pages/NewProduct';
 
 setupIonicReact();
 
@@ -52,6 +53,11 @@ const App: React.FC = () => (
         <Route exact path="/product">
           <Product />
         </Route>
+
+        <Route exact path="/newproduct">
+          <NewProduct />
+        </Route>
+
 
         <Route exact path="/document">
           <Document />
