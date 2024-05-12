@@ -54,7 +54,8 @@ const NewProduct: React.FC = () => {
     const image = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
-      quality: 100,
+      allowEditing: true,
+      quality: 90,
       width: 500,
     });
     console.log(image);
