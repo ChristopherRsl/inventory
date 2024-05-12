@@ -15,7 +15,7 @@ export default function LinkAction({
         <IonCol size="12">
           <p>
             {message}
-            <IonRouterLink className="custom-link" routerLink={link}>
+            <IonRouterLink  routerLink={link}>
               {" "}
                &rarr;
             </IonRouterLink>

@@ -17,12 +17,11 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LinkAction from "../components/LinkAction";
 import { arrowBack, shapesOutline } from "ionicons/icons";
 import '../firebase.config'
-import {getAuth, createUserWithEmailAndPassword} from "firebase/auth"
-
+import {getAuth, createUserWithEmailAndPassword,onAuthStateChanged} from "firebase/auth"
 export default function Signup() {
   const auth = getAuth()
 
@@ -33,6 +32,24 @@ export default function Signup() {
   const passwordInputRef = useRef<HTMLIonInputElement>(null);
   const repasswordInputRef = useRef<HTMLIonInputElement>(null);
   const [error, setError] = useState<string>();
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    currentUserHandler()
+  }, []);
+
+  const currentUserHandler = ()=>{
+    onAuthStateChanged(auth, (user)=>{
+      if(user){
+        console.log(user)
+        const uid = user.uid
+        
+      }else{
+        console.log("tidak ada user")
+      }
+    })
+  }
+
 
   const signup = () => {
     const userEmail = emailInputRef.current!.value;
@@ -61,6 +78,8 @@ export default function Signup() {
 
     console.log(userEmail, userPassword);
   };
+
+
 
   const clearError = () => {
     setError("");
