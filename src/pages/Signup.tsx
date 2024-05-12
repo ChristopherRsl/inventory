@@ -20,8 +20,15 @@ import {
 import { useRef, useState } from "react";
 import LinkAction from "../components/LinkAction";
 import { arrowBack, shapesOutline } from "ionicons/icons";
+import '../firebase.config'
+import {getAuth, createUserWithEmailAndPassword} from "firebase/auth"
 
 export default function Signup() {
+  const auth = getAuth()
+
+
+
+
   const emailInputRef = useRef<HTMLIonInputElement>(null);
   const passwordInputRef = useRef<HTMLIonInputElement>(null);
   const repasswordInputRef = useRef<HTMLIonInputElement>(null);
@@ -42,6 +49,15 @@ export default function Signup() {
 
       return;
     }
+
+    createUserWithEmailAndPassword(auth, userEmail as string, userPassword as string).then((userCredential)=>{
+
+      const user = userCredential.user;
+      setError("Register Berhasil");
+    }).catch((err)=>{
+      const errorMsg = err.message;
+      setError(errorMsg);
+    })
 
     console.log(userEmail, userPassword);
   };

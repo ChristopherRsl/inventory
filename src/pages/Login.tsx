@@ -18,16 +18,18 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { useRef, useState } from "react";
-
+import "../firebase.config";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import LinkAction from "../components/LinkAction";
 import { arrowBack, shapesOutline } from "ionicons/icons";
 
 export default function Login() {
+  const auth = getAuth();
+
   const emailInputRef = useRef<HTMLIonInputElement>(null);
   const passwordInputRef = useRef<HTMLIonInputElement>(null);
 
   const [error, setError] = useState<string>();
-
 
   const login = () => {
     const userEmail = emailInputRef.current!.value;
@@ -39,7 +41,21 @@ export default function Login() {
       return;
     }
 
-    console.log(userEmail,userPassword);
+    signInWithEmailAndPassword(
+      auth,
+      userEmail as string,
+      userPassword as string
+    )
+      .then((userCredential) => {
+        const user = userCredential.user;
+        setError("Login Berhasil");
+      })
+      .catch((err) => {
+        const errorMsg = err.message;
+        setError(errorMsg);
+      });
+
+    console.log(userEmail, userPassword);
   };
   const loginGoogle = () => {
     console.log("login google");
@@ -51,7 +67,7 @@ export default function Login() {
 
   return (
     <>
-    <IonAlert
+      <IonAlert
         isOpen={!!error}
         message={error}
         buttons={[{ text: "Okay", handler: clearError }]}
@@ -79,8 +95,6 @@ export default function Login() {
 
             <IonRow className="ion-margin-top ion-padding-top">
               <IonCol size="12">
-
-
                 <IonRow>
                   <IonCol>
                     <IonGrid>
