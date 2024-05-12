@@ -1,9 +1,7 @@
 import { IonButtons, IonContent, IonHeader, IonMenu, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import './Home.css';
 import Menu from '../components/Menu';
 
-const Home: React.FC = () => {
+const Add: React.FC = () => {
   return (<>
       <Menu></Menu>
    
@@ -13,14 +11,14 @@ const Home: React.FC = () => {
             <IonButtons slot="start">
               <IonMenuButton></IonMenuButton>
             </IonButtons>
-            <IonTitle>Home</IonTitle>
+            <IonTitle>Add</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonContent className="ion-padding">HOMEHOMEHOMEHOME HOMEHOME HOMEHOME HOMEHOME</IonContent>
+        <IonContent className="ion-padding">ADD ADD ADD ADD </IonContent>
       </IonPage>
   </>
     
   );
 };
 
-export default Home;
+export default Add;
