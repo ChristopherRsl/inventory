@@ -26,6 +26,8 @@ import {
   documentTextOutline,
   duplicateOutline,
   home,
+  person,
+  people
 } from "ionicons/icons";
 
 export default function Menu() {
@@ -80,6 +82,14 @@ export default function Menu() {
               <IonItem button routerLink="/document">
                 <IonIcon slot="start" icon={documentText}></IonIcon>
                 <IonLabel>Documents</IonLabel>
+              </IonItem>
+              <IonItem button routerLink="/suppliers">
+                <IonIcon slot="start" icon={people}></IonIcon>
+                <IonLabel>Suppliers</IonLabel>
+              </IonItem>
+              <IonItem button routerLink="/profile">
+                <IonIcon slot="start" icon={person}></IonIcon>
+                <IonLabel>Profile</IonLabel>
               </IonItem>
               <IonItem button routerLink="/add">
                 <IonIcon slot="start" icon={bagAdd}></IonIcon>

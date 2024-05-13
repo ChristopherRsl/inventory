@@ -6,16 +6,42 @@ import {
   IonCardTitle,
   IonIcon,
 } from "@ionic/react";
+import NewProduct from "../pages/NewProduct";
+import { db } from "../firebase.config";
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "@firebase/firestore";
 
-export default function ProductCard() {
+const ProductCards: React.FC = () => {
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      const productsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setProducts(productsData);
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
-    <IonCard>
-      <IonCardHeader className="icon-centered">
-       product
-      </IonCardHeader>
-      <IonCardContent className="ion-align-center ion-padding">
-        <IonCardTitle className="ion-text-center">content</IonCardTitle>
-      </IonCardContent>
-    </IonCard>
+    <>
+      {products.map(product => (
+        <IonCard key={product.id}>
+          <IonCardHeader>
+            <IonCardTitle>{product.name}</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            <p>Description: {product.description}</p>
+            <p>Quantity: {product.quantity}</p>
+          </IonCardContent>
+        </IonCard>
+      ))}
+    </>
   );
-}
+};
+
+export default ProductCards;

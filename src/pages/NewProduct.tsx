@@ -22,53 +22,33 @@ import Menu from "../components/Menu";
 import { camera, checkmark } from "ionicons/icons";
 import { useRef, useState } from "react";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
+import { db } from "../firebase.config";
+import { addDoc, collection } from "firebase/firestore";
 
 const NewProduct: React.FC = () => {
-  const nameInputRef = useRef<HTMLIonInputElement>(null);
-  const descriptionInputRef = useRef<HTMLIonInputElement>(null);
-  const quantityInputRef = useRef<HTMLIonInputElement>(null);
-  const imageInputRef = useRef<HTMLIonInputElement>(null);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [quantity, setQuantity] = useState('');
 
   const [error, setError] = useState<string>();
-  const [isOpen, setIsOpen] = useState(false);
-  const [takenPhoto, setTakenPhoto] = useState<{
-    path: string;
-    preview: string;
-  }>();
+  
 
-  const handleAddProduct = () => {
-    const productName = nameInputRef.current!.value;
-    const productDescription = descriptionInputRef.current!.value;
-    const productreQuantity = quantityInputRef.current!.value;
-
-    if (!productName || !productDescription || !productreQuantity) {
-      setError("Please fill all the forms");
-
-      return;
+  const handleAddProduct = async () => {
+    try {
+      await addDoc(collection(db,"products"),{
+        name,
+        description,
+        quantity: parseInt(quantity)
+      });
+      setName('');
+      setDescription('');
+      setQuantity('');
+      console.log('Product added successfully');
+    } catch (error) {
+      console.error('Error adding product: ', error);
     }
-
-    console.log(productName, productreQuantity);
   };
 
-  const takePhotoHandler = async () => {
-    const image = await Camera.getPhoto({
-      resultType: CameraResultType.Uri,
-      source: CameraSource.Camera,
-      allowEditing: true,
-      quality: 90,
-      width: 500,
-    });
-    console.log(image);
-
-    if (!image  || !image.webPath) {
-      return;
-    }
-
-    setTakenPhoto({
-      path: image.format,
-      preview: image.webPath,
-    });
-  };
 
   const clearError = () => {
     setError("");
@@ -107,11 +87,12 @@ const NewProduct: React.FC = () => {
                   <IonGrid>
                     <IonLabel position="floating">Product Name</IonLabel>
                     <IonInput
-                      ref={nameInputRef}
                       placeholder="Product name"
+                      value={name}
                       type="text"
                       labelPlacement="stacked"
                       fill="solid"
+                      onIonChange={(e) => setName(e.detail.value!)}
                     ></IonInput>
                   </IonGrid>
                 </IonCol>
@@ -121,11 +102,12 @@ const NewProduct: React.FC = () => {
                   <IonGrid>
                     <IonLabel position="floating">Description</IonLabel>
                     <IonInput
-                      ref={descriptionInputRef}
                       placeholder="Description"
+                      value={description}
                       type="text"
                       labelPlacement="stacked"
                       fill="solid"
+                      onIonChange={(e) => setDescription(e.detail.value!)}
                     />
                   </IonGrid>
                 </IonCol>
@@ -135,48 +117,14 @@ const NewProduct: React.FC = () => {
                   <IonGrid>
                     <IonLabel position="floating">Quantity</IonLabel>
                     <IonInput
-                      ref={quantityInputRef}
                       placeholder="Quantity"
                       type="number"
+                      value={quantity}
                       labelPlacement="stacked"
                       fill="solid"
+                      onIonChange={(e) => setQuantity(e.detail.value!)}
                     />
                   </IonGrid>
-                </IonCol>
-              </IonRow>
-
-              <IonRow>
-                <IonCol>
-                  <IonGrid>
-                    <IonLabel position="floating">Product Image</IonLabel>
-                    <IonCol>
-                      <IonRow>
-                        
-                        {takenPhoto ? (
-                          <img src={takenPhoto.preview} alt="Preview" />
-                        ):(<><h2>no photo taken</h2></>)}
-                      </IonRow>
-                    </IonCol>
-                  </IonGrid>
-                </IonCol>
-              </IonRow>
-
-              <IonRow>
-                <IonCol>
-                  <IonRow className="ion-margin-top">
-                    <IonCol className="ion-text-center">
-                      <IonButton fill="outline" onClick={takePhotoHandler}>
-                        <IonIcon slot="start" icon={camera}></IonIcon>
-                        <IonLabel>Take Photo</IonLabel>
-                      </IonButton>
-                    </IonCol>
-                  </IonRow>
-                  <IonToast
-                    isOpen={isOpen}
-                    message="Register Successfull"
-                    onDidDismiss={() => setIsOpen(false)}
-                    duration={5000}
-                  ></IonToast>
                 </IonCol>
               </IonRow>
             </IonCol>
