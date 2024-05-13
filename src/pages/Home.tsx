@@ -2,9 +2,13 @@ import {
   IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
   IonMenu,
   IonMenuButton,
   IonPage,
+  IonTabBar,
+  IonTabButton,
+  IonTabs,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
@@ -12,6 +16,7 @@ import ExploreContainer from "../components/ExploreContainer";
 import "./Home.css";
 import Menu from "../components/Menu";
 import MenuCard from "../components/MenuCard";
+import { home, person, pricetag, swapHorizontal } from "ionicons/icons";
 
 export const MENU_DATA = [
   {
@@ -55,8 +60,7 @@ const Home: React.FC = () => {
             {MENU_DATA.map((item, index) => (
             <MenuCard key={index} {...item} />
           ))}
-          </div>
-          
+          </div>       
         </IonContent>
       </IonPage>
     </>
