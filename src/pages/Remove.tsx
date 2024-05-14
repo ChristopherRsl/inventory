@@ -11,7 +11,7 @@ const Remove: React.FC = () => {
             <IonButtons slot="start">
               <IonMenuButton></IonMenuButton>
             </IonButtons>
-            <IonTitle>Remove</IonTitle>
+            <IonTitle>Remove Quantity</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">Tap the button in the toolbar to open the menu.</IonContent>

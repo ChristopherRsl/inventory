@@ -1,5 +1,6 @@
 import { IonButtons, IonContent, IonHeader, IonMenu, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import Menu from '../components/Menu';
+import ProductCards from '../components/ProductCard';
 
 const Add: React.FC = () => {
   return (<>
@@ -11,10 +12,12 @@ const Add: React.FC = () => {
             <IonButtons slot="start">
               <IonMenuButton></IonMenuButton>
             </IonButtons>
-            <IonTitle>Add</IonTitle>
+            <IonTitle>Add Quantity</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonContent className="ion-padding">ADD ADD ADD ADD </IonContent>
+        <IonContent className="ion-padding">
+          <ProductCards></ProductCards>
+        </IonContent>
       </IonPage>
   </>
     

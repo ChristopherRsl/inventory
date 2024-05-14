@@ -20,44 +20,90 @@ import {
 } from "@ionic/react";
 import Menu from "../components/Menu";
 import { camera, checkmark } from "ionicons/icons";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
+import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { db } from "../firebase.config";
 import { addDoc, collection } from "firebase/firestore";
+import {
+  getStorage,
+  ref,
+  getDownloadURL,
+  uploadBytes,
+} from "@firebase/storage";
 
 const NewProduct: React.FC = () => {
-  
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [quantity, setQuantity] = useState('');
+  const auth = getAuth();
+  const storage = getStorage();
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [uom, setUom] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string>();
+  const [uid, setUid] = useState<string>();
+
   const [takenPhoto, setTakenPhoto] = useState<{
     path: string;
     preview: string;
   }>();
 
+  const uploadImage = async (selectedfile: any) => {
+    const storageRef = ref(storage, `images/${uid}/${name}`);
+
+    uploadBytes(storageRef, selectedfile).then((res) => {
+      console.log(res);
+      console.log("u0pload a blob");
+    });
+  };
+
+  useEffect(() => {
+    currentUserHandler();
+  }, []);
+
+  const currentUserHandler = () => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        setUid(uid);
+      } else {
+        setError("You must be logged in to add products");
+        console.log("You must be logged in to add products");
+      }
+    });
+  };
+
   const handleAddProduct = async () => {
     try {
-
+      currentUserHandler();
       if (!name || !description || !quantity) {
         setError("Please fill all the forms");
-  
+
         return;
       }
 
-      await addDoc(collection(db,"products"),{
+      const userProductsRef = collection(db, "products", uid!, "myProduct");
+
+      const response = await fetch(takenPhoto?.preview!);
+      const blobl = await response.blob();
+      uploadImage(blobl);
+
+      await addDoc(userProductsRef, {
         name,
         description,
-        quantity: parseInt(quantity)
+        quantity: parseInt(quantity),
+        uom: uom,
       });
-      setName('');
-      setDescription('');
-      setQuantity('');
-      console.log('Product added successfully');
-      setIsOpen(true)
+
+      setName("");
+      setDescription("");
+      setQuantity("");
+      setUom("");
+      console.log("Product added successfully");
+      setIsOpen(true);
     } catch (error) {
-      console.error('Error adding product: ', error);
+      console.error("Error adding product: ", error);
     }
   };
 
@@ -71,7 +117,7 @@ const NewProduct: React.FC = () => {
     });
     console.log(image);
 
-    if (!image  || !image.webPath) {
+    if (!image || !image.webPath) {
       return;
     }
 
@@ -80,7 +126,6 @@ const NewProduct: React.FC = () => {
       preview: image.webPath,
     });
   };
-
 
   const clearError = () => {
     setError("");
@@ -154,7 +199,25 @@ const NewProduct: React.FC = () => {
                       value={quantity}
                       labelPlacement="stacked"
                       fill="solid"
-                      onIonChange={(e) => setQuantity(e.detail.value!)}
+                      onIonChange={(e) => {
+                        setQuantity(e.detail.value!);
+                        console.log(e);
+                      }}
+                    />
+                  </IonGrid>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol>
+                  <IonGrid>
+                    <IonLabel position="floating">Unit Of Measurement</IonLabel>
+                    <IonInput
+                      placeholder="Unit Of Measurement"
+                      value={uom}
+                      type="text"
+                      labelPlacement="stacked"
+                      fill="solid"
+                      onIonChange={(e) => setUom(e.detail.value!)}
                     />
                   </IonGrid>
                 </IonCol>
@@ -166,10 +229,13 @@ const NewProduct: React.FC = () => {
                     <IonLabel position="floating">Product Image</IonLabel>
                     <IonCol>
                       <IonRow>
-                        
                         {takenPhoto ? (
                           <img src={takenPhoto.preview} alt="Preview" />
-                        ):(<><h2>no photo taken</h2></>)}
+                        ) : (
+                          <>
+                            <h2>no photo taken</h2>
+                          </>
+                        )}
                       </IonRow>
                     </IonCol>
                   </IonGrid>
@@ -194,7 +260,6 @@ const NewProduct: React.FC = () => {
                   ></IonToast>
                 </IonCol>
               </IonRow>
-
             </IonCol>
           </IonRow>
         </IonContent>
