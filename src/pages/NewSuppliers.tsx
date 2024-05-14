@@ -27,12 +27,20 @@ import {
   const NewSuppliers: React.FC = () => {
     const [name, setName] = useState('');
     const [type, setType] = useState('');
-  
+    const [isOpen, setIsOpen] = useState(false);
+
     const [error, setError] = useState<string>();
     
   
     const handleAddSuppliers = async () => {
       try {
+
+        if (!name || !type) {
+          setError("Please fill all the forms");
+    
+          return;
+        }
+
         await addDoc(collection(db,"suppliers"),{
           name,
           type,
@@ -40,6 +48,7 @@ import {
         setName('');
         setType('');
         console.log('Product added successfully');
+        setIsOpen(true)
       } catch (error) {
         console.error('Error adding product: ', error);
       }
@@ -57,6 +66,12 @@ import {
           message={error}
           buttons={[{ text: "Okay", handler: clearError }]}
         ></IonAlert>
+        <IonToast
+                    isOpen={isOpen}
+                    message="Item Added Successfuly"
+                    onDidDismiss={() => setIsOpen(false)}
+                    duration={5000}
+                  ></IonToast>
         <IonPage id="main-content">
           <IonHeader>
             <IonToolbar>

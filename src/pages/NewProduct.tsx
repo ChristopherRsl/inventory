@@ -26,15 +26,26 @@ import { db } from "../firebase.config";
 import { addDoc, collection } from "firebase/firestore";
 
 const NewProduct: React.FC = () => {
+  
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [quantity, setQuantity] = useState('');
-
+  const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string>();
-  
+  const [takenPhoto, setTakenPhoto] = useState<{
+    path: string;
+    preview: string;
+  }>();
 
   const handleAddProduct = async () => {
     try {
+
+      if (!name || !description || !quantity) {
+        setError("Please fill all the forms");
+  
+        return;
+      }
+
       await addDoc(collection(db,"products"),{
         name,
         description,
@@ -44,9 +55,30 @@ const NewProduct: React.FC = () => {
       setDescription('');
       setQuantity('');
       console.log('Product added successfully');
+      setIsOpen(true)
     } catch (error) {
       console.error('Error adding product: ', error);
     }
+  };
+
+  const takePhotoHandler = async () => {
+    const image = await Camera.getPhoto({
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Camera,
+      allowEditing: true,
+      quality: 90,
+      width: 500,
+    });
+    console.log(image);
+
+    if (!image  || !image.webPath) {
+      return;
+    }
+
+    setTakenPhoto({
+      path: image.format,
+      preview: image.webPath,
+    });
   };
 
 
@@ -127,6 +159,42 @@ const NewProduct: React.FC = () => {
                   </IonGrid>
                 </IonCol>
               </IonRow>
+
+              <IonRow>
+                <IonCol>
+                  <IonGrid>
+                    <IonLabel position="floating">Product Image</IonLabel>
+                    <IonCol>
+                      <IonRow>
+                        
+                        {takenPhoto ? (
+                          <img src={takenPhoto.preview} alt="Preview" />
+                        ):(<><h2>no photo taken</h2></>)}
+                      </IonRow>
+                    </IonCol>
+                  </IonGrid>
+                </IonCol>
+              </IonRow>
+
+              <IonRow>
+                <IonCol>
+                  <IonRow className="ion-margin-top">
+                    <IonCol className="ion-text-center">
+                      <IonButton fill="outline" onClick={takePhotoHandler}>
+                        <IonIcon slot="start" icon={camera}></IonIcon>
+                        <IonLabel>Take Photo</IonLabel>
+                      </IonButton>
+                    </IonCol>
+                  </IonRow>
+                  <IonToast
+                    isOpen={isOpen}
+                    message="Item Added Successfuly"
+                    onDidDismiss={() => setIsOpen(false)}
+                    duration={5000}
+                  ></IonToast>
+                </IonCol>
+              </IonRow>
+
             </IonCol>
           </IonRow>
         </IonContent>
