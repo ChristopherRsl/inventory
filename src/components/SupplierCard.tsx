@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  IonButton,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -30,7 +31,7 @@ const SupplierCards: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       await deleteDoc(doc(db, "suppliers", id));
-      setProducts(suppliers.filter(supplier => supplier.id !== id));
+      setSuppliers(suppliers.filter(supplier => supplier.id !== id));
     } catch (error)
     {
       console.error('Error deleting product: ', error)
@@ -46,6 +47,9 @@ const SupplierCards: React.FC = () => {
           </IonCardHeader>
           <IonCardContent>
             <p>Type: {supplier.type}</p>
+            <IonButton color={"danger"} slot="end" onClick={() => handleDelete(supplier.id)}>
+              Delete
+            </IonButton>
           </IonCardContent>
         </IonCard>
       ))}
@@ -54,7 +58,4 @@ const SupplierCards: React.FC = () => {
 };
 
 export default SupplierCards;
-function setProducts(arg0: any) {
-  throw new Error("Function not implemented.");
-}
 
