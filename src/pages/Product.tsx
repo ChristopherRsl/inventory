@@ -2,8 +2,32 @@ import { IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonMe
 import Menu from '../components/Menu';
 import { add, cube, cubeOutline } from 'ionicons/icons';
 import ProductCard from '../components/ProductCard';
+import { useEffect, useState } from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const Product: React.FC = () => {
+  const auth = getAuth();
+
+  const [uid, setUid] = useState<string>();
+
+
+
+  useEffect(() => {
+    currentUserHandler()
+  }, []);
+
+  const currentUserHandler = async () => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        setUid(uid);
+      } else {
+        console.log("ta");
+      }
+    });
+  };
+
+
   return (<>
       <Menu></Menu>
    
