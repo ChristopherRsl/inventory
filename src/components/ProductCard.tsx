@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  IonButton,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -11,20 +12,21 @@ import NewProduct from "../pages/NewProduct";
 import { db } from "../firebase.config";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "@firebase/firestore";
+import { collection, getDocs, deleteDoc, doc } from "@firebase/firestore";
+
 import {
   getStorage,
   ref,
   getDownloadURL,
   uploadBytes,
 } from "@firebase/storage";
+import { trash, trashBin } from "ionicons/icons";
 
 export default function ProductCards() {
   const auth = getAuth();
   const storage = getStorage();
 
   const [products, setProducts] = useState<any[]>([]);
-  const [uid, setUid] = useState<string>();
 
   const fetchProducts = async () => {
     onAuthStateChanged(auth, async (user) => {
@@ -49,8 +51,10 @@ export default function ProductCards() {
               );
               const downloadURL = await getDownloadURL(storageRef);
               productData.imageUrl = downloadURL;
-            } catch { productData.imageUrl = "notwork";}
-           
+            } catch {
+              productData.imageUrl = "notwork";
+            }
+
             return productData;
           })
         );
@@ -62,19 +66,23 @@ export default function ProductCards() {
     });
   };
 
-  const currentUserHandler = () => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const uid = user.uid;
-        setUid(uid);
-      } else {
-        console.log("You must be logged in to add products");
-      }
-    });
+  const handleDelete = async (id: string) => {
+    try {
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          const uid = user.uid;
+          await deleteDoc(doc(db, "products", uid!, "myProduct", id));
+          setProducts(products.filter((product) => product.id !== id));
+        } else {
+          console.log("ta");
+        }
+      });
+    } catch (error) {
+      console.error("Error deleting product: ", error);
+    }
   };
 
   useEffect(() => {
-    currentUserHandler();
     fetchProducts();
   }, []);
 
@@ -93,16 +101,31 @@ export default function ProductCards() {
             <img
               // src="public/assets/No-Image.png"
               src={
-                product.imageUrl!=="notwork"
+                product.imageUrl !== "notwork"
                   ? product.imageUrl
                   : "public/assets/No-Image.png"
               }
               alt=""
-              style={{ width: 150, height: 150, marginRight: 10 }}
+              style={{ width: 150, height: 150 }}
             />
             <IonCol>
               <IonCardHeader>
-                <IonCardTitle>{product.name}</IonCardTitle>
+                <IonCardTitle
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                  }}
+                >
+                  {product.name}{" "}
+                  <IonButton
+                    size="small"
+                    color="danger"
+                    onClick={() => handleDelete(product.id)}
+                  >
+                    <IonIcon icon={trashBin} slot="icon-only"></IonIcon>
+                  </IonButton>
+                </IonCardTitle>
               </IonCardHeader>
               <IonCardContent>
                 <p>Description: {product.description}</p>
