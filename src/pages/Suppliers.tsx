@@ -1,9 +1,10 @@
 import { IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonMenu, IonMenuButton, IonPage, IonTabBar, IonTabButton, IonTabs, IonTitle, IonToolbar } from '@ionic/react';
 import Menu from '../components/Menu';
-import { add, cube, cubeOutline, person, personAdd } from 'ionicons/icons';
+import { add, cube, cubeOutline } from 'ionicons/icons';
 import ProductCard from '../components/ProductCard';
+import SupplierCard from '../components/SupplierCard';
 
-const Profile: React.FC = () => {
+const Suppliers: React.FC = () => {
   return (<>
       <Menu></Menu>
    
@@ -13,15 +14,15 @@ const Profile: React.FC = () => {
             <IonButtons slot="start">
               <IonMenuButton></IonMenuButton>
             </IonButtons>
-            <IonTitle>Profile</IonTitle>
+            <IonTitle>Suppliers</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
-        <ProductCard></ProductCard>
+        <SupplierCard></SupplierCard>
 
         <IonFab slot="fixed" vertical="bottom" horizontal="end">
-          <IonFabButton routerLink='/editprofile'>
-            <IonIcon icon={personAdd}></IonIcon>
+          <IonFabButton routerLink='/newsuppliers'>
+            <IonIcon icon={cubeOutline}></IonIcon>
           </IonFabButton>
           
         </IonFab>
@@ -32,4 +33,4 @@ const Profile: React.FC = () => {
   );
 };
 
-export default Profile;
+export default Suppliers;

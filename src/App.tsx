@@ -27,13 +27,21 @@ import '@ionic/react/css/display.css';
  */
 
 /* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
-import '@ionic/react/css/palettes/dark.system.css';
+ import '@ionic/react/css/palettes/dark.class.css'; 
+// import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Product from './pages/Product';
+import Document from './pages/Document';
+import Add from './pages/Add';
+import Remove from './pages/Remove';
+import NewProduct from './pages/NewProduct';
+import Suppliers from './pages/Suppliers';
+import Profile from './pages/Profile';
+import NewSuppliers from './pages/NewSuppliers';
 
 setupIonicReact();
 
@@ -43,6 +51,42 @@ const App: React.FC = () => (
       <IonRouterOutlet>
         <Route exact path="/home">
           <Home />
+        </Route>
+
+        <Route exact path="/product">
+          <Product />
+        </Route>
+
+        <Route exact path="/newproduct">
+          <NewProduct />
+        </Route>
+
+
+        <Route exact path="/document">
+          <Document />
+        </Route>
+
+        <Route exact path="/suppliers">
+          <Suppliers />
+        </Route>
+
+        <Route exact path="/newsuppliers">
+          <NewSuppliers />
+        </Route>
+
+        <Route exact path="/profile">
+          <Profile />
+        </Route>
+        <Route exact path="/editprofile">
+          <Profile />
+        </Route>
+
+        <Route exact path="/add">
+          <Add />
+        </Route>
+
+        <Route exact path="/remove">
+          <Remove />
         </Route>
 
         <Route exact path="/login">

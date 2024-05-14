@@ -1,41 +1,69 @@
 import {
+  IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
+  IonMenu,
+  IonMenuButton,
   IonPage,
-  IonTitle,
-  IonToolbar,
-  IonTabs,
   IonTabBar,
   IonTabButton,
-  IonRouterOutlet,
+  IonTabs,
+  IonTitle,
+  IonToolbar,
 } from "@ionic/react";
 import ExploreContainer from "../components/ExploreContainer";
 import "./Home.css";
+import Menu from "../components/Menu";
+import MenuCard from "../components/MenuCard";
+import { home, person, pricetag, swapHorizontal } from "ionicons/icons";
 
-import { IonReactRouter } from "@ionic/react-router";
+export const MENU_DATA = [
+  {
+    name: "Product",
+    icon: "cube",
+    route: "product",
+  },
+  {
+    name: "Document",
+    icon: "documentText",
+    route: "document",
+  },
+  {
+    name: "Add",
+    icon: "bagAdd",
+    route: "add",
+  },
+  {
+    name: "Remove",
+    icon: "bagRemove",
+    route: "remove",
+  },
+];
 
 const Home: React.FC = () => {
   return (
-    <IonPage>
-      <IonReactRouter>
+    <>
+      <Menu></Menu>
+
+      <IonPage id="main-content">
         <IonHeader>
           <IonToolbar>
-            <IonTitle>Blank</IonTitle>
+            <IonButtons slot="start">
+              <IonMenuButton></IonMenuButton>
+            </IonButtons>
+            <IonTitle>Home</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonContent fullscreen>
-          <IonHeader collapse="condense">
-            <IonToolbar>
-              <IonTitle size="large">Blank</IonTitle>
-            </IonToolbar>
-          </IonHeader>
-          <ExploreContainer />
+        <IonContent className="ion-padding">
+          <div className="menu-grid">
+            {MENU_DATA.map((item, index) => (
+            <MenuCard key={index} {...item} />
+          ))}
+          </div>       
         </IonContent>
-        <IonTabs>
-          <IonRouterOutlet></IonRouterOutlet>
-        </IonTabs>
-      </IonReactRouter>
-    </IonPage>
+      </IonPage>
+    </>
   );
 };
 
