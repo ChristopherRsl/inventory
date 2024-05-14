@@ -4,6 +4,7 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
+  IonCol,
   IonIcon,
 } from "@ionic/react";
 import NewProduct from "../pages/NewProduct";
@@ -11,27 +12,49 @@ import { db } from "../firebase.config";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "@firebase/firestore";
+import {
+  getStorage,
+  ref,
+  getDownloadURL,
+  uploadBytes,
+} from "@firebase/storage";
 
 export default function ProductCards() {
   const auth = getAuth();
+  const storage = getStorage();
 
-  const [uid, setUid] = useState<string>();
   const [products, setProducts] = useState<any[]>([]);
+  const [uid, setUid] = useState<string>();
 
-  const currentUserHandler = async () => {
-    onAuthStateChanged(auth,async (user) => {
+  const fetchProducts = async () => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         const uid = user.uid;
-        console.log(uid);
-        setUid(uid);
+
         const querySnapshot = await getDocs(
           collection(db, "products", uid!, "myProduct")
         );
-    
-        const productsData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+
+        const productsData = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const productData: any = {
+              id: doc.id,
+              ...doc.data(),
+            };
+
+            try {
+              const storageRef = ref(
+                storage,
+                `images/${uid}/${doc.data().name}`
+              );
+              const downloadURL = await getDownloadURL(storageRef);
+              productData.imageUrl = downloadURL;
+            } catch { productData.imageUrl = "notwork";}
+           
+            return productData;
+          })
+        );
+
         setProducts(productsData);
       } else {
         console.log("ta");
@@ -39,38 +62,61 @@ export default function ProductCards() {
     });
   };
 
-  const fetchProducts = async () => {
-    console.log(uid);
-    const querySnapshot = await getDocs(
-      collection(db, "products", uid!, "myProduct")
-    );
-
-    const productsData = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setProducts(productsData);
+  const currentUserHandler = () => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        setUid(uid);
+      } else {
+        console.log("You must be logged in to add products");
+      }
+    });
   };
 
   useEffect(() => {
     currentUserHandler();
-    // fetchProducts();
+    fetchProducts();
   }, []);
 
   return (
     <>
-      {products.map((product) => (
-        <IonCard key={product.id}>
-          <IonCardHeader>
-            <IonCardTitle>{product.name}</IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent>
-            <p>Description: {product.description}</p>
-            <p>Quantity: {product.quantity}</p>
-            <p>Measurement: {product.uom}</p>
-          </IonCardContent>
-        </IonCard>
-      ))}
+      {products.length !== 0 ? (
+        products.map((product) => (
+          <IonCard
+            key={product.id}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              maxHeight: "150px",
+            }}
+          >
+            <img
+              // src="public/assets/No-Image.png"
+              src={
+                product.imageUrl!=="notwork"
+                  ? product.imageUrl
+                  : "public/assets/No-Image.png"
+              }
+              alt=""
+              style={{ width: 150, height: 150, marginRight: 10 }}
+            />
+            <IonCol>
+              <IonCardHeader>
+                <IonCardTitle>{product.name}</IonCardTitle>
+              </IonCardHeader>
+              <IonCardContent>
+                <p>Description: {product.description}</p>
+                <p>Quantity: {product.quantity}</p>
+                <p>Measurement: {product.uom}</p>
+              </IonCardContent>
+            </IonCol>
+          </IonCard>
+        ))
+      ) : (
+        <>
+          <h1>no products stored</h1>
+        </>
+      )}
     </>
   );
 }

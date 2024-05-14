@@ -23,12 +23,19 @@ import { camera, checkmark } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
+import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { db } from "../firebase.config";
 import { addDoc, collection } from "firebase/firestore";
+import {
+  getStorage,
+  ref,
+  getDownloadURL,
+  uploadBytes,
+} from "@firebase/storage";
 
 const NewProduct: React.FC = () => {
   const auth = getAuth();
-
+  const storage = getStorage();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -36,10 +43,20 @@ const NewProduct: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string>();
   const [uid, setUid] = useState<string>();
+
   const [takenPhoto, setTakenPhoto] = useState<{
     path: string;
     preview: string;
   }>();
+
+  const uploadImage = async (selectedfile: any) => {
+    const storageRef = ref(storage, `images/${uid}/${name}`);
+
+    uploadBytes(storageRef, selectedfile).then((res) => {
+      console.log(res);
+      console.log("u0pload a blob");
+    });
+  };
 
   useEffect(() => {
     currentUserHandler();
@@ -48,10 +65,10 @@ const NewProduct: React.FC = () => {
   const currentUserHandler = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const uid = user.uid
+        const uid = user.uid;
         setUid(uid);
       } else {
-        setError("You must be logged in to add products")
+        setError("You must be logged in to add products");
         console.log("You must be logged in to add products");
       }
     });
@@ -59,14 +76,18 @@ const NewProduct: React.FC = () => {
 
   const handleAddProduct = async () => {
     try {
-      currentUserHandler()
-      if (!name || !description || !quantity ) {
+      currentUserHandler();
+      if (!name || !description || !quantity) {
         setError("Please fill all the forms");
 
         return;
       }
 
-      const userProductsRef = collection(db,"products" , uid!,"myProduct");
+      const userProductsRef = collection(db, "products", uid!, "myProduct");
+
+      const response = await fetch(takenPhoto?.preview!);
+      const blobl = await response.blob();
+      uploadImage(blobl);
 
       await addDoc(userProductsRef, {
         name,
@@ -74,10 +95,11 @@ const NewProduct: React.FC = () => {
         quantity: parseInt(quantity),
         uom: uom,
       });
+
       setName("");
       setDescription("");
       setQuantity("");
-      setUom("")
+      setUom("");
       console.log("Product added successfully");
       setIsOpen(true);
     } catch (error) {
@@ -177,7 +199,10 @@ const NewProduct: React.FC = () => {
                       value={quantity}
                       labelPlacement="stacked"
                       fill="solid"
-                      onIonChange={(e) => {setQuantity(e.detail.value!);console.log(e)}}
+                      onIonChange={(e) => {
+                        setQuantity(e.detail.value!);
+                        console.log(e);
+                      }}
                     />
                   </IonGrid>
                 </IonCol>
