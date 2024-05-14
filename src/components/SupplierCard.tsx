@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  IonButton,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -9,6 +10,7 @@ import {
 import { db } from "../firebase.config";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "@firebase/firestore";
+import { deleteDoc, doc } from "firebase/firestore";
 
 const SupplierCards: React.FC = () => {
   const [suppliers, setSuppliers] = useState<any[]>([]);
@@ -26,6 +28,16 @@ const SupplierCards: React.FC = () => {
     fetchSuppliers();
   }, []);
 
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "suppliers", id));
+      setSuppliers(suppliers.filter(supplier => supplier.id !== id));
+    } catch (error)
+    {
+      console.error('Error deleting product: ', error)
+    }
+  }
+
   return (
     <>
       {suppliers.map(supplier => (
@@ -35,6 +47,9 @@ const SupplierCards: React.FC = () => {
           </IonCardHeader>
           <IonCardContent>
             <p>Type: {supplier.type}</p>
+            <IonButton color={"danger"} slot="end" onClick={() => handleDelete(supplier.id)}>
+              Delete
+            </IonButton>
           </IonCardContent>
         </IonCard>
       ))}
@@ -43,3 +58,4 @@ const SupplierCards: React.FC = () => {
 };
 
 export default SupplierCards;
+
