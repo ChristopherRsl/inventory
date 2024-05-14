@@ -17,8 +17,9 @@ const Profile: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
-        <ProductCard></ProductCard>
-
+        {/* <ProductCard></ProductCard>
+         */}
+          <h1>profile</h1>
         <IonFab slot="fixed" vertical="bottom" horizontal="end">
           <IonFabButton routerLink='/editprofile'>
             <IonIcon icon={personAdd}></IonIcon>
