@@ -9,6 +9,7 @@ import {
 import { db } from "../firebase.config";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "@firebase/firestore";
+import { deleteDoc, doc } from "firebase/firestore";
 
 const SupplierCards: React.FC = () => {
   const [suppliers, setSuppliers] = useState<any[]>([]);
@@ -25,6 +26,16 @@ const SupplierCards: React.FC = () => {
 
     fetchSuppliers();
   }, []);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "suppliers", id));
+      setProducts(suppliers.filter(supplier => supplier.id !== id));
+    } catch (error)
+    {
+      console.error('Error deleting product: ', error)
+    }
+  }
 
   return (
     <>
@@ -43,3 +54,7 @@ const SupplierCards: React.FC = () => {
 };
 
 export default SupplierCards;
+function setProducts(arg0: any) {
+  throw new Error("Function not implemented.");
+}
+
