@@ -20,10 +20,16 @@ import {
 } from "@ionic/react";
 import { useEffect, useRef, useState } from "react";
 import "../firebase.config";
-import { getAuth, signInWithEmailAndPassword , onAuthStateChanged, signInWithPopup, GoogleAuthProvider} from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
 import LinkAction from "../components/LinkAction";
 import { arrowBack, logoGoogle, shapesOutline } from "ionicons/icons";
-import { useHistory } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 
 export default function Login() {
   const auth = getAuth();
@@ -37,19 +43,19 @@ export default function Login() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    currentUserHandler()
+    currentUserHandler();
   }, []);
 
-  const currentUserHandler = ()=>{
-    onAuthStateChanged(auth, (user)=>{
-      if(user){
-        console.log(user)
-        const uid = user.uid
-      }else{
-        console.log("tidak ada user")
+  const currentUserHandler = () => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log(user);
+        const uid = user.uid;
+      } else {
+        console.log("tidak ada user");
       }
-    })
-  }
+    });
+  };
 
   const login = () => {
     const userEmail = emailInputRef.current!.value;
@@ -68,9 +74,9 @@ export default function Login() {
     )
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log(user)
+        console.log(user);
         // setError("Login Berhasil");
-        setIsOpen(true)
+        setIsOpen(true);
         history.push("/home");
       })
       .catch((err) => {
@@ -81,23 +87,22 @@ export default function Login() {
     console.log(userEmail, userPassword);
   };
   const loginGoogle = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential!.accessToken;
 
-    signInWithPopup(auth, provider).then((result)=>{
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token  = credential!.accessToken
-
-      const user = result.user
-      console.log(result)
-      setIsOpen(true)
-      history.push("/home");
-    }).catch((err)=>{
-      const email = err.email;
-      const credential = GoogleAuthProvider.credentialFromError(err);
-      const errorMsg = err.message;
-      setError(errorMsg);
-      
-  })
-
+        const user = result.user;
+        console.log(result);
+        setIsOpen(true);
+        history.push("/home");
+      })
+      .catch((err) => {
+        const email = err.email;
+        const credential = GoogleAuthProvider.credentialFromError(err);
+        const errorMsg = err.message;
+        setError(errorMsg);
+      });
   };
 
   const clearError = () => {
@@ -184,7 +189,6 @@ export default function Login() {
                       onClick={loginGoogle}
                     >
                       <IonIcon slot="start" icon={logoGoogle}></IonIcon>
-
                       Login With Google
                     </IonButton>
                   </IonCol>

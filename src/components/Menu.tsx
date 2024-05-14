@@ -27,10 +27,15 @@ import {
   duplicateOutline,
   home,
   person,
-  people
+  people,
+  logOut
 } from "ionicons/icons";
+import { useHistory } from 'react-router-dom';
+import { getAuth, signOut } from "firebase/auth";
 
 export default function Menu() {
+  const auth = getAuth();
+  const history = useHistory();
     const [paletteToggle, setPaletteToggle] = useState(false);
 
     // Listen for the toggle check/uncheck to toggle the dark palette
@@ -47,6 +52,15 @@ export default function Menu() {
     const initializeDarkPalette = (isDark: boolean) => {
       setPaletteToggle(isDark);
       toggleDarkPalette(isDark);
+    };
+
+    const handleLogout = async () => {
+      try {
+        await signOut(auth);
+        history.push('/login'); 
+      } catch (error) {
+        console.error('Error logging out:', error);
+      }
     };
   
     useEffect(() => {
@@ -98,6 +112,11 @@ export default function Menu() {
               <IonItem button routerLink="/remove">
                 <IonIcon slot="start" icon={bagRemove}></IonIcon>
                 <IonLabel>Remove</IonLabel>
+              </IonItem>
+
+              <IonItem button onClick={handleLogout}>
+                <IonIcon slot="start" icon={logOut}></IonIcon>
+                <IonLabel>Log Out</IonLabel>
               </IonItem>
 
               <IonItem>

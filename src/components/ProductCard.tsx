@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  
   IonButton,
   IonCard,
   IonCardContent,
@@ -20,6 +19,7 @@ import {
   ref,
   getDownloadURL,
   uploadBytes,
+  deleteObject,
 } from "@firebase/storage";
 import { trash, trashBin } from "ionicons/icons";
 
@@ -67,13 +67,21 @@ export default function ProductCards() {
     });
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, name: string) => {
     try {
       onAuthStateChanged(auth, async (user) => {
         if (user) {
           const uid = user.uid;
           await deleteDoc(doc(db, "products", uid!, "myProduct", id));
           setProducts(products.filter((product) => product.id !== id));
+
+          // Construct storage reference with the provided name
+          const storageRef = ref(storage, `images/${uid}/${name}`);
+
+          deleteObject(storageRef)
+            .then(() => {
+              console.log("image deleted")
+            })
         } else {
           console.log("ta");
         }
@@ -86,8 +94,6 @@ export default function ProductCards() {
   useEffect(() => {
     fetchProducts();
   }, []);
-
-
 
   return (
     <>
@@ -124,7 +130,7 @@ export default function ProductCards() {
                   <IonButton
                     size="small"
                     color="danger"
-                    onClick={() => handleDelete(product.id)}
+                    onClick={() => handleDelete(product.id, product.name)}
                   >
                     <IonIcon icon={trashBin} slot="icon-only"></IonIcon>
                   </IonButton>
