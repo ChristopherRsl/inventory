@@ -19,7 +19,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import Menu from "../components/Menu";
-import { camera, checkmark } from "ionicons/icons";
+import { ban, camera, checkmark } from "ionicons/icons";
 import { useRef, useState } from "react";
 import { db } from "../firebase.config";
 import { addDoc, collection } from "firebase/firestore";
@@ -29,6 +29,10 @@ const NewSuppliers: React.FC = () => {
   const auth = getAuth();
   const [name, setName] = useState("");
   const [type, setType] = useState("");
+  const [email, setEmail] = useState("");
+  const [noTelp, setNoTelp] = useState("");
+  const [notes, setNotes] = useState("");
+  const [bankAcc, setBankAcc] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
   const [error, setError] = useState<string>();
@@ -48,9 +52,17 @@ const NewSuppliers: React.FC = () => {
           await addDoc(collection(db, "suppliers", uid!, "mySuppliers"), {
             name,
             type,
+            email,
+            noTelp,
+            notes,
+            bankAcc
           });
           setName("");
           setType("");
+          setEmail("");
+          setNoTelp("");
+          setNotes("");
+          setBankAcc("");
           console.log("Product added successfully");
           setIsOpen(true);
         } else {
@@ -128,6 +140,66 @@ const NewSuppliers: React.FC = () => {
                       labelPlacement="stacked"
                       fill="solid"
                       onIonChange={(e) => setType(e.detail.value!)}
+                    />
+                  </IonGrid>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol>
+                  <IonGrid>
+                    <IonLabel position="floating">E-mail</IonLabel>
+                    <IonInput
+                      placeholder="E-mail"
+                      value={email}
+                      type="text"
+                      labelPlacement="stacked"
+                      fill="solid"
+                      onIonChange={(e) => setEmail(e.detail.value!)}
+                    />
+                  </IonGrid>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol>
+                  <IonGrid>
+                    <IonLabel position="floating">No Telpon</IonLabel>
+                    <IonInput
+                      placeholder="No Telpon"
+                      value={noTelp}
+                      type="text"
+                      labelPlacement="stacked"
+                      fill="solid"
+                      onIonChange={(e) => setNoTelp(e.detail.value!)}
+                    />
+                  </IonGrid>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol>
+                  <IonGrid>
+                    <IonLabel position="floating">Notes</IonLabel>
+                    <IonInput
+                      placeholder="Notes"
+                      value={notes}
+                      type="text"
+                      labelPlacement="stacked"
+                      fill="solid"
+                      onIonChange={(e) => setNotes(e.detail.value!)}
+                    />
+                  </IonGrid>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol>
+                  <IonGrid>
+                    <IonLabel position="floating">Rekening Bank</IonLabel>
+                    <IonInput
+                      placeholder="Rekening Bank"
+                      value={bankAcc}
+                      type="text"
+                      labelPlacement="stacked"
+                      fill="solid"
+                      onIonChange={(e) => setBankAcc(e.detail.value!)}
                     />
                   </IonGrid>
                 </IonCol>

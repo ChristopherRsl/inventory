@@ -65,6 +65,10 @@ const SupplierCards: React.FC = () => {
           </IonCardHeader>
           <IonCardContent>
             <p>Type: {supplier.type}</p>
+            <p>Email: {supplier.email}</p>
+            <p>Phone: {supplier.noTelp}</p>
+            <p>Notes: {supplier.notes}</p>
+            <p>Bank Account: {supplier.bankAcc}</p>
             <IonButton
               color={"danger"}
               slot="end"
