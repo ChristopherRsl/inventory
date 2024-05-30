@@ -1,12 +1,53 @@
-import { IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonMenu, IonMenuButton, IonPage, IonTabBar, IonTabButton, IonTabs, IonTitle, IonToolbar } from '@ionic/react';
-import Menu from '../components/Menu';
-import { add, cube, cubeOutline, person, personAdd } from 'ionicons/icons';
-import ProductCard from '../components/ProductCard';
+import {
+  IonButtons,
+  IonContent,
+  IonFab,
+  IonFabButton,
+  IonHeader,
+  IonIcon,
+  IonMenuButton,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonItem,
+  IonLabel,
+  IonLoading,
+} from "@ionic/react";
+import Menu from "../components/Menu";
+import { personAdd } from "ionicons/icons";
+import { useEffect, useState } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase.config"; // Import your firebaseConfig
 
 const Profile: React.FC = () => {
-  return (<>
+  const [profile, setProfile] = useState({ name: "", email: "" });
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        fetchProfile(user.uid);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const fetchProfile = async (userId: string) => {
+    setLoading(true);
+    const profileDoc = await getDoc(doc(db, "profiles", userId));
+    if (profileDoc.exists()) {
+      setProfile(profileDoc.data() as { name: string; email: string });
+    }
+    setLoading(false);
+  };
+
+  return (
+    <>
       <Menu></Menu>
-   
       <IonPage id="main-content">
         <IonHeader>
           <IonToolbar>
@@ -17,19 +58,21 @@ const Profile: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
-        {/* <ProductCard></ProductCard>
-         */}
-          <h1>profile</h1>
-        <IonFab slot="fixed" vertical="bottom" horizontal="end">
-          <IonFabButton routerLink='/editprofile'>
-            <IonIcon icon={personAdd}></IonIcon>
-          </IonFabButton>
-          
-        </IonFab>
+          <IonItem>
+            <IonLabel>Name: {profile.name}</IonLabel>
+          </IonItem>
+          <IonItem>
+            <IonLabel>Email: {profile.email}</IonLabel>
+          </IonItem>
+          <IonFab slot="fixed" vertical="bottom" horizontal="end">
+            <IonFabButton routerLink="/editprofile">
+              <IonIcon icon={personAdd}></IonIcon>
+            </IonFabButton>
+          </IonFab>
+          <IonLoading isOpen={loading} message={"Please wait..."} />
         </IonContent>
       </IonPage>
-  </>
-    
+    </>
   );
 };
 

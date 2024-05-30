@@ -42,6 +42,7 @@ import NewProduct from './pages/NewProduct';
 import Suppliers from './pages/Suppliers';
 import Profile from './pages/Profile';
 import NewSuppliers from './pages/NewSuppliers';
+import EditProfile from './pages/EditProfile';
 
 setupIonicReact();
 
@@ -78,7 +79,7 @@ const App: React.FC = () => (
           <Profile />
         </Route>
         <Route exact path="/editprofile">
-          <Profile />
+          <EditProfile />
         </Route>
 
         <Route exact path="/add">

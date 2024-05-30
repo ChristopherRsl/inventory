@@ -25,19 +25,19 @@ export const MENU_DATA = [
     route: "product",
   },
   {
-    name: "Document",
+    name: "Suppliers",
     icon: "documentText",
+    route: "suppliers",
+  },
+  {
+    name: "Documents",
+    icon: "bagAdd",
     route: "document",
   },
   {
-    name: "Add",
-    icon: "bagAdd",
-    route: "add",
-  },
-  {
-    name: "Remove",
+    name: "Profile",
     icon: "bagRemove",
-    route: "remove",
+    route: "profile",
   },
 ];
 
